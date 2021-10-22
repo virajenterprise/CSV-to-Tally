@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel To Tally</title>
+</head>
+<body>
+    <div class="w3-row  w3-sand w3-border w3-border-light-blue" style="height:100vh">
+        <div class="w3-col s6  w3-rightbar" style="height: 99vh;">
+            <div class="w3-panel w3-blue w3-round-xlarge">
+                <h2>Import Data From Excel To Tally</h2>
+            </div>
+            <section class="w3-container w3-card w3-leftbar w3-topbar">
+                <label style="font-weight: bold;" for="fileselected">Select XML File</label>
+                <input class="w3-input" type="file" id="fileselected">
+                <button class="w3-bar w3-teal w3-right" onclick="downloadCSV()">Download CSV</button><br>
+            </section><br>
+            <section class="w3-container w3-card w3-leftbar w3-topbar">
+                <label style="font-weight: bold;" for="csvUpload">Upload CSV File </label>
+                <input class="w3-input" type="file" id="csvUpload">
+                <button onclick="readCSV()" class="w3-bar w3-teal">Upload CSV</button>
+            </section>
+            <br><br><br><br><br><br><br><br><br>
+            <section class="w3-container w3-card w3-leftbar w3-topbar">
+                <button onclick="clearlog()" class="w3-bar w3-teal">Clear Log</button>
+            </section>
+        </div>
+        <div class="w3-col s6">
+            <div class="w3-panel w3-blue w3-round-xlarge">
+                <h2>Application Log</h2>
+            </div>
+            <div id="LogDiv" class="w3-dark-grey" style="height: 85vh; font-family: monospace; overflow: auto;">
+                
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+<script>    
+    var xmldata;
+    var parser = new DOMParser();
+    var dom;
+    var voucherType;
+    var ledgerCount;
+    var debitcountno=0;
+    var creditcountno=0;
+    document.getElementById("fileselected")
+        .addEventListener('change', function (){            
+            document.getElementById("LogDiv").innerHTML='=> XML File Uploading...<br>';            
+            document.getElementById("LogDiv").innerHTML+='=> XML File Uploaded...<br>';
+            var fr = new FileReader();
+            fr.onload = function () {
+                xmldata = fr.result;
+                dom = parser.parseFromString(xmldata, "text/xml");
+            }
+            fr.readAsText(this.files[0]);
+            document.getElementById("LogDiv").innerHTML+='=> XML File Processed Please Click Download CSV Button<br>';
+        });
+    function downloadCSV() {        
+        var csvContent1 = [];
+        var csvContent = ["Date","Narration"];
+        var newContent = "DebitAccount";
+        var newContent1 = "DebitAmount";
+        var newContent2 = "CreditAccount";
+        var newContent3 = "CreditAmount";
+        ledgerCount = dom.getElementsByTagName("ALLLEDGERENTRIES.LIST").length;        
+        var count=dom.getElementsByTagName("ISDEEMEDPOSITIVE");        
+        for(i=0;i<count.length;i++){
+            var res=count[i].innerHTML;
+            if(res=="Yes"){
+                debitcountno++
+            }else{
+                if(res=="No"){
+                    creditcountno++
+                }
+            }
+        }        
+        voucherType=dom.getElementsByTagName("VOUCHERTYPENAME")[0].textContent
+        
+        for(var i=0;i<debitcountno;i++){
+            csvContent.push(newContent+"-"+i,newContent1+"-"+i)[i];
+        }        
+        csvContent.push(newContent2,newContent3);        
+        var csvData = "data:text/csv;charset=utf-8,";
+        console.log(csvContent);
+        csvContent.join(",");
+        //csvData += csvContent + "\r\n";        
+        var csvContent1 = ["VoucherType",voucherType,"DebitCount",debitcountno,"CreditCount",creditcountno];
+        csvData += csvContent1+"\r\n"+csvContent;
+        var encodedUri = encodeURI(csvData);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "import.csv");
+        document.body.appendChild(link);
+        link.click();        
+    }
+    function clearlog(){
+        document.getElementById("LogDiv").innerHTML="";        
+    }
+    function readCSV(){
+        var csv=document.getElementById("csvUpload");
+        var csvDataNew;        
+        var fr= new FileReader();
+        fr.onload=function(){
+            csvDataNew=fr.result;
+            var newString=csvDataNew.replace(/,"/g,",(").replace(/",/g,"),").replace(/"/g,")");            
+            var newString1=newString.replace(/\([^)]*\)/g,(match,startIndex,wholeString)=>{
+                return match.replace(/,/g,"<>");
+            });
+            var newString2=newString1.replace(/,/g,"|").replace(/<>/g,",").replace(/[()]/g,"");
+            document.getElementById("LogDiv").innerHTML=newString2.split("\r\n");
+            var csvData=newString2.split("\r\n");
+            voucherType=csvData[0].split("|")[1];
+            debitcountno=csvData[0].split("|")[3];
+            creditcountno=csvData[0].split("|")[5];
+            csvData.pop();
+            var headers=csvData[1].split("|");            
+            csvData.splice(0,1);
+            var finalArray=[];
+            for(var i=1;i<csvData.length;i++){
+                var data=csvData[i].split("|");
+                var obj={};
+                for(var j=0;j<data.length;j++){
+                    obj[headers[j]]=data[j];
+                }
+                finalArray.push(obj);
+            }            
+            //post(finalArray);
+            csvData.splice(0,1);
+            var data=[]
+            for(i=0;i<csvData.length;i++){
+                data.push(csvData[i].split("|"));
+                post(data);
+            }
+            
+        }
+        fr.readAsText(csv.files[0]);
+    }
+function post(x){    
+    var xmlEnvolpe="<ENVELOPE>"+"<HEADER>"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
+        x.forEach((x,index)=>{            
+            xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x[0]+"</DATE>"+"<NARRATION>"+x[1]+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
+                for(i=0;i<debitcountno;i++){                    
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+x[i+2]+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+"-"+x[i+3]+"</AMOUNT>"
+                        +"</ALLLEDGERENTRIES.LIST>";
+                }                
+                for(j=0;j<creditcountno;j++){
+                    var jplus=parseFloat(debitcountno)*2+2
+                    var jplusone=parseFloat(jplus)+1
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+x[j+jplus]+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+x[j+jplusone]+"</AMOUNT>"+"</ALLLEDGERENTRIES.LIST>"+"</VOUCHER>";
+                }
+        });
+        xmlEnvolpe+="</TALLYMESSAGE>"+"</REQUESTDATA>"+"</IMPORTDATA>"+"</BODY>"+"</ENVELOPE>";        
+    console.log(parser.parseFromString(xmlEnvolpe,"text/xml"));    
+}
+</script>
+
+</html>
