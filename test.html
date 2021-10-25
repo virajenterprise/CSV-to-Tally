@@ -138,8 +138,7 @@
         }
         fr.readAsText(csv.files[0]);
     }
-function post(x){
-       testPost(x); 
+function post(x){       
     var xmlEnvolpe="<ENVELOPE>"+"<HEADER>"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
         x.forEach((x,index)=>{            
             xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x.Date+"</DATE>"+"<NARRATION>"+x.Narration+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
