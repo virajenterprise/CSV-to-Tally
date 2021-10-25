@@ -85,7 +85,6 @@
         }        
         csvContent.push(newContent2,newContent3);        
         var csvData = "data:text/csv;charset=utf-8,";
-        console.log(csvContent);
         csvContent.join(",");
         //csvData += csvContent + "\r\n";        
         var csvContent1 = ["VoucherType",voucherType,"DebitCount",debitcountno,"CreditCount",creditcountno];
@@ -95,7 +94,7 @@
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", "import.csv");
         document.body.appendChild(link);
-        link.click();        
+        link.click();
     }
     function clearlog(){
         document.getElementById("LogDiv").innerHTML="";        
@@ -133,28 +132,45 @@
             var data=[]
             for(i=0;i<csvData.length;i++){
                 data.push(csvData[i].split("|"));
-                post(data);
+                post(finalArray);
             }
             
         }
         fr.readAsText(csv.files[0]);
     }
-function post(x){    
+function post(x){
+       testPost(x); 
     var xmlEnvolpe="<ENVELOPE>"+"<HEADER>"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
         x.forEach((x,index)=>{            
-            xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x[0]+"</DATE>"+"<NARRATION>"+x[1]+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
+            xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x.Date+"</DATE>"+"<NARRATION>"+x.Narration+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
                 for(i=0;i<debitcountno;i++){                    
-                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+x[i+2]+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+"-"+x[i+3]+"</AMOUNT>"
-                        +"</ALLLEDGERENTRIES.LIST>";
-                }                
-                for(j=0;j<creditcountno;j++){
-                    var jplus=parseFloat(debitcountno)*2+2
-                    var jplusone=parseFloat(jplus)+1
-                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+x[j+jplus]+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+x[j+jplusone]+"</AMOUNT>"+"</ALLLEDGERENTRIES.LIST>"+"</VOUCHER>";
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+eval("x.DebitAccount"+i.toString())+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+"-"+eval("x.DebitAmount"+i.toString())+"</AMOUNT>"
+                        +"</ALLLEDGERENTRIES.LIST>";}                        
+                for(j=0;j<creditcountno;j++){                    
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+eval("x.CreditAccount"+j.toString())+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+eval("x.CreditAmount"+j.toString())+"</AMOUNT>"+"</ALLLEDGERENTRIES.LIST>"+"</VOUCHER>";
                 }
         });
-        xmlEnvolpe+="</TALLYMESSAGE>"+"</REQUESTDATA>"+"</IMPORTDATA>"+"</BODY>"+"</ENVELOPE>";        
-    console.log(parser.parseFromString(xmlEnvolpe,"text/xml"));    
+        xmlEnvolpe+="</TALLYMESSAGE>"+"</REQUESTDATA>"+"</IMPORTDATA>"+"</BODY>"+"</ENVELOPE>";
+        var xmlData = "data:text/xml;charset=utf-8,";
+        xmlData+=xmlEnvolpe;
+        var xmlpostfile=parser.parseFromString(xmlEnvolpe,"text/xml");
+        var encodedUri = encodeURI(xmlData);
+        var link = document.createElement("a");        
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "import.xml");
+        document.body.appendChild(link);
+        //link.click();
+        var xhttp= new XMLHttpRequest();
+        xhttp.onreadystatechange=function(){
+            if(this.readyState==4&&this.status==200){
+                console.log(this.response);
+            }
+        }
+        xhttp.open("POST","http://localhost:9000/",true);
+        //xhttp.setRequestHeader('Content-Type','application/X-www-form-urlencoded');
+        xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');
+        //xhttp.setRequestHeader( 'Content-Type','text/xml;charset:UTF-8','Content-Length','Buffer.byteLength(xmlstring)');       
+        xhttp.send(xmlData);
 }
 </script>
 
