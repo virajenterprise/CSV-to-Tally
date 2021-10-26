@@ -138,39 +138,46 @@
         }
         fr.readAsText(csv.files[0]);
     }
-function post(x){       
-    var xmlEnvolpe="<ENVELOPE>"+"<HEADER>"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
-        x.forEach((x,index)=>{            
-            xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x.Date+"</DATE>"+"<NARRATION>"+x.Narration+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
+function post(x){ 
+    var xmlEnvolpe="<ENVELOPE>"+"/r\n/"+"<HEADER>"+"/r\n/"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"/r\n/"+"</HEADER>"+"/r\n/"+"<BODY>"+"/r\n/"+"<IMPORTDATA>"+"/r\n/"+"<REQUESTDESC></REQUESTDESC>"+"/r\n/"+"<REQUESTDATA>"+"/r\n/"+"<TALLYMESSAGE>"+"/r\n/";
+        x.forEach((x,index)=>{
+            xmlEnvolpe+="<VOUCHER>"+"/r\n/"+"<DATE>"+x.Date+"</DATE>"+"/r\n/"+"<NARRATION>"+x.Narration+"</NARRATION>"+"/r\n/"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"/r\n/"+"<VOUCHERNUMBER></VOUCHERNUMBER>"+"/r\n/";
                 for(i=0;i<debitcountno;i++){                    
-                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+eval("x.DebitAccount"+i.toString())+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+"-"+eval("x.DebitAmount"+i.toString())+"</AMOUNT>"
-                        +"</ALLLEDGERENTRIES.LIST>";}                        
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"/r\n/"+"<LEDGERNAME>"+eval("x.DebitAccount"+i.toString())+"</LEDGERNAME>"+"/r\n/"+"<ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>"+"/r\n/"+"<AMOUNT>"+"-"+eval("x.DebitAmount"+i.toString())+"</AMOUNT>"+"/r\n/"
+                        +"</ALLLEDGERENTRIES.LIST>"+"/r\n/";}                        
                 for(j=0;j<creditcountno;j++){                    
-                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"<LEDGERNAME>"+eval("x.CreditAccount"+j.toString())+"</LEDGERNAME>"+"<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>"+"<AMOUNT>"+eval("x.CreditAmount"+j.toString())+"</AMOUNT>"+"</ALLLEDGERENTRIES.LIST>"+"</VOUCHER>";
+                    xmlEnvolpe+="<ALLLEDGERENTRIES.LIST>"+"/r\n/"+"<LEDGERNAME>"+eval("x.CreditAccount"+j.toString())+"</LEDGERNAME>"+"/r\n/"+"<ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>"+"/r\n/"+"<AMOUNT>"+eval("x.CreditAmount"+j.toString())+"</AMOUNT>"+"/r\n/"+"</ALLLEDGERENTRIES.LIST>"+"/r\n/"+"</VOUCHER>"+"/r\n/";
                 }
         });
-        xmlEnvolpe+="</TALLYMESSAGE>"+"</REQUESTDATA>"+"</IMPORTDATA>"+"</BODY>"+"</ENVELOPE>";
+        xmlEnvolpe+="</TALLYMESSAGE>"+"/r\n/"+"</REQUESTDATA>"+"/r\n/"+"</IMPORTDATA>"+"/r\n/"+"</BODY>"+"/r\n/"+"</ENVELOPE>";
         var xmlData = "data:text/xml;charset=utf-8,";
         xmlData+=xmlEnvolpe;
-        var xmlpostfile=parser.parseFromString(xmlEnvolpe,"text/xml");
-        var encodedUri = encodeURI(xmlData);
+        var xmlpostfile=parser.parseFromString(xmlData,'application/xml');
+        var encodedUri = encodeURI(xmlpostfile);
         var link = document.createElement("a");        
         link.setAttribute("href", encodedUri);
         link.setAttribute("download", "import.xml");
         document.body.appendChild(link);
-        link.click();
+        //link.click();
         var xhttp= new XMLHttpRequest();
         xhttp.onreadystatechange=function(){
-            if(this.readyState==4&&this.status==200){
-                console.log(this.response);
+            if(this.readyState==4){
+                console.log(this.responseType);
             }
         }
-        xhttp.open("POST","http://localhost:9000/",true);
-        //xhttp.setRequestHeader('Content-Type','application/X-www-form-urlencoded');
-        xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');
-        //xhttp.setRequestHeader( 'Content-Type','text/xml;charset:UTF-8','Content-Length','Buffer.byteLength(xmlstring)');       
-        xhttp.send(xmlData);
+        xhttp.open("POST","http://localhost:9000/",true);        
+        
+        //xhttp.setRequestHeader('Access-Control-Allow-Origin','Origin');
+        //xhttp.setRequestHeader('Access-Control-Allow-Headers','Accept');
+        xhttp.setRequestHeader('Accept','text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8');
+        //xhttp.setRequestHeader('Access-Control-Allow-Origin','*');
+        //xhttp.setRequestHeader('Access-Control-Allow-Methods',' POST, GET, OPTIONS');
+        //xhttp.setRequestHeader('Access-Control-Allow-Headers','X-PINGOTHER, Content-Type');
+        xhttp.setRequestHeader('Content-Type','application/X-www-form-urlencoded');
+        xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');        
+        xhttp.send(xmlEnvolpe);
 }
+
 </script>
 
 </html>
