@@ -150,7 +150,7 @@ function post(x){
                 }
         });
         xmlEnvolpe+="</TALLYMESSAGE>"+"/r\n/"+"</REQUESTDATA>"+"/r\n/"+"</IMPORTDATA>"+"/r\n/"+"</BODY>"+"/r\n/"+"</ENVELOPE>";
-        var xmlData = "data:text/xml;charset=utf-8,";
+        var xmlData = "data:text/xml;charset=utf-16,";
         xmlData+=xmlEnvolpe;
         var xmlpostfile=parser.parseFromString(xmlData,'application/xml');
         var encodedUri = encodeURI(xmlpostfile);
@@ -169,13 +169,14 @@ function post(x){
         
         //xhttp.setRequestHeader('Access-Control-Allow-Origin','Origin');
         //xhttp.setRequestHeader('Access-Control-Allow-Headers','Accept');
-        xhttp.setRequestHeader('Accept','text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8');
+        //xhttp.setRequestHeader('Accept','text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8');
         //xhttp.setRequestHeader('Access-Control-Allow-Origin','*');
         //xhttp.setRequestHeader('Access-Control-Allow-Methods',' POST, GET, OPTIONS');
         //xhttp.setRequestHeader('Access-Control-Allow-Headers','X-PINGOTHER, Content-Type');
-        xhttp.setRequestHeader('Content-Type','application/X-www-form-urlencoded');
-        xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');        
-        xhttp.send(xmlEnvolpe);
+        //xhttp.setRequestHeader('Content-Type','application/X-www-form-urlencoded');
+        //xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');
+        xhttp.setRequestHeader('Content-Type','text/xml;charset=utf-16');
+        xhttp.send(xmlData);
 }
 
 </script>
