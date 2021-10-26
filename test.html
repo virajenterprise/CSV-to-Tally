@@ -139,7 +139,7 @@
         fr.readAsText(csv.files[0]);
     }
 function post(x){ 
-    var xmlEnvolpe="<ENVELOPE>"+"/r\n/"+"<HEADER>"+"/r\n/"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"/r\n/"+"</HEADER>"+"/r\n/"+"<BODY>"+"/r\n/"+"<IMPORTDATA>"+"/r\n/"+"<REQUESTDESC></REQUESTDESC>"+"/r\n/"+"<REQUESTDATA>"+"/r\n/"+"<TALLYMESSAGE>"+"/r\n/";
+    var xmlEnvolpe="<ENVELOPE>"+/r\n/+"<HEADER>"+"/r\n/"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"/r\n/"+"</HEADER>"+"/r\n/"+"<BODY>"+"/r\n/"+"<IMPORTDATA>"+"/r\n/"+"<REQUESTDESC></REQUESTDESC>"+"/r\n/"+"<REQUESTDATA>"+"/r\n/"+"<TALLYMESSAGE>"+"/r\n/";
         x.forEach((x,index)=>{
             xmlEnvolpe+="<VOUCHER>"+"/r\n/"+"<DATE>"+x.Date+"</DATE>"+"/r\n/"+"<NARRATION>"+x.Narration+"</NARRATION>"+"/r\n/"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"/r\n/"+"<VOUCHERNUMBER></VOUCHERNUMBER>"+"/r\n/";
                 for(i=0;i<debitcountno;i++){                    
