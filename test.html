@@ -164,7 +164,8 @@ function post(x){
         newlink.download='data.xml'
         var blob=new Blob([json_string],{type:'text/xml'})
         newlink.href=window.URL.createObjectURL(blob);
-        newlink.click();        
+        newlink.click();
+    console.log("post");
 
 
 
