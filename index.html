@@ -81,7 +81,7 @@
         voucherType=dom.getElementsByTagName("VOUCHERTYPENAME")[0].textContent
         
         for(var i=0;i<debitcountno;i++){
-            csvContent.push(newContent+"-"+i,newContent1+"-"+i)[i];
+            csvContent.push(newContent+i,newContent1+i)[i];
         }        
         csvContent.push(newContent2,newContent3);        
         var csvData = "data:text/csv;charset=utf-8,";
