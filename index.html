@@ -3,6 +3,7 @@
 <head>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/xml; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Excel To Tally</title>
@@ -37,7 +38,10 @@
             </div>
         </div>
     </div>
-    </div>
+    <form action="http://localhost:9000/" method="post" enctype="multipart/form-data">
+        <input type="file">
+        <input type="submit">
+    </form>   
 </body>
 <script>    
     var xmldata;
@@ -82,8 +86,10 @@
         
         for(var i=0;i<debitcountno;i++){
             csvContent.push(newContent+i,newContent1+i)[i];
+        }
+        for(var i=0;i<creditcountno;i++){
+            csvContent.push(newContent2+i,newContent3+i)[i];
         }        
-        csvContent.push(newContent2,newContent3);        
         var csvData = "data:text/csv;charset=utf-8,";
         csvContent.join(",");
         //csvData += csvContent + "\r\n";        
@@ -139,7 +145,10 @@
         fr.readAsText(csv.files[0]);
     }
 function post(x){ 
-    var xmlEnvolpe="<ENVELOPE>"+"<HEADER>"+"<TALLYREQUEST>Import Data</TALLYREQUEST>"+"</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
+    var xmlEnvolpe="<ENVELOPE>"+
+    "<HEADER>"+
+    "<TALLYREQUEST>Import Data</TALLYREQUEST>"+
+    "</HEADER>"+"<BODY>"+"<IMPORTDATA>"+"<REQUESTDESC></REQUESTDESC>"+"<REQUESTDATA>"+"<TALLYMESSAGE>";
         x.forEach((x,index)=>{
             xmlEnvolpe+="<VOUCHER>"+"<DATE>"+x.Date+"</DATE>"+"<NARRATION>"+x.Narration+"</NARRATION>"+"<VOUCHERTYPENAME>"+voucherType+"</VOUCHERTYPENAME>"+"<VOUCHERNUMBER></VOUCHERNUMBER>";
                 for(i=0;i<debitcountno;i++){                    
@@ -150,9 +159,10 @@ function post(x){
                 }
         });
         xmlEnvolpe+="</TALLYMESSAGE>"+"</REQUESTDATA>"+"</IMPORTDATA>"+"</BODY>"+"</ENVELOPE>";
-        var xmlData = "data:text/xml;charset=utf-16,";
+        var xmlData = "data:text/xml;charset=utf-8";
         xmlData+=xmlEnvolpe;        
         var xmlpostfile=parser.parseFromString(xmlData,'application/xml');
+        console.log(xmlpostfile);
         var encodedUri = encodeURI(xmlData);
         var link = document.createElement("a");        
         link.setAttribute("href", encodedUri);
@@ -165,10 +175,6 @@ function post(x){
         var blob=new Blob([json_string],{type:'text/xml'})
         newlink.href=window.URL.createObjectURL(blob);
         newlink.click();
-    console.log("post");
-
-
-
         /*var xhttp= new XMLHttpRequest();
         xhttp.onreadystatechange=function(){
             if(this.readyState==4){
@@ -176,7 +182,6 @@ function post(x){
             }
         }
         xhttp.open("POST","http://localhost:9000/",true);        
-        
         xhttp.setRequestHeader('Access-Control-Allow-Origin','Origin');
         xhttp.setRequestHeader('Access-Control-Allow-Headers','Accept');*/
         //xhttp.setRequestHeader('Accept','text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8');
@@ -187,6 +192,21 @@ function post(x){
         xhttp.setRequestHeader('Content-Type','xml version = "1.0" encoding = "UTF-8"');
         xhttp.setRequestHeader('Content-Type','text/xml;charset=utf-16');
         xhttp.send(blob);*/
+       /* var form=document.createElement('form');
+        form.setAttribute('method','post');
+        form.setAttribute('action','http://localhost:9000/data.xml');
+        
+        var input=document.createElement('input');
+        input.setAttribute('type','file');
+        var newfile= new File([blob],'data.xml',{type:"text/xml"});
+        var container= new DataTransfer();
+        container.items.add(newfile);
+        input.files=container.files;
+        var button=document.createElement("button");
+        button.setAttribute("type","button");        
+        form.appendChild(input);
+        form.appendChild(button);        
+        button.click();*/
 }
 
 </script>
