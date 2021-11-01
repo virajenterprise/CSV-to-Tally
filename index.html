@@ -38,7 +38,7 @@
             </div>
         </div>
     </div>
-    <button type="button" onclick="test4()">Test4</button> 
+    
 </body>
 <script>    
     var xmldata;
@@ -205,19 +205,7 @@ function post(x){
         form.appendChild(button);        
         button.click();*/
 }
-function test4(){
-var raw = "<ENVELOPE>\r\n	<HEADER>\r\n		<VERSION>1</VERSION>\r\n		<TALLYREQUEST>Export</TALLYREQUEST>\r\n		<TYPE>Collection</TYPE>\r\n		<ID>List of Companies</ID>\r\n	</HEADER>\r\n	<BODY>\r\n		<DESC>\r\n			<STATICVARIABLES>\r\n            <SVIsSimpleCompany>No</SVIsSimpleCompany>\r\n            </STATICVARIABLES>\r\n			<TDL>\r\n				<TDLMESSAGE>\r\n					<COLLECTION ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"Yes\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"List of Companies\">\r\n						<TYPE>Company</TYPE>\r\n						<NATIVEMETHOD>Name</NATIVEMETHOD>\r\n					</COLLECTION>\r\n				</TDLMESSAGE>\r\n			</TDL>\r\n		</DESC>\r\n	</BODY>\r\n</ENVELOPE>";
 
-var requestOptions = {
-  method: 'POST',
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("http://localhost:9000", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));}
 </script>
 
 </html>
