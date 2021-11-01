@@ -206,18 +206,20 @@ function post(x){
         button.click();*/
 }
 function test4(){
-    var raw = "<ENVELOPE>\r\n	<HEADER>\r\n		<VERSION>1</VERSION>\r\n		<TALLYREQUEST>Export</TALLYREQUEST>\r\n		<TYPE>Collection</TYPE>\r\n		<ID>Ledgers</ID>\r\n	</HEADER>\r\n	<BODY>\r\n		<DESC>\r\n			<STATICVARIABLES>\r\n				<SVEXPORTFORMAT>$$SysName:XML</SVEXPORTFORMAT> <!-- * Supports only xml format -->\r\n                <SVFROMDATE TYPE=\"Date\">20200801</SVFROMDATE>\r\n				<SVTODATE TYPE=\"Date\">20210831</SVTODATE>\r\n			</STATICVARIABLES>\r\n			<TDL>\r\n				<TDLMESSAGE>\r\n					<COLLECTION ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"No\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"Ledgers\">\r\n						<TYPE>Ledger</TYPE>\r\n						<NATIVEMETHOD>Address</NATIVEMETHOD>\r\n                        <!-- * will fetch all fields if you want specific fields you can specify -->\r\n						<NATIVEMETHOD>*</NATIVEMETHOD>\r\n                        \r\n						<FILTERS>Ledgerfilter</FILTERS>\r\n					</COLLECTION>\r\n                    <!-- You can  change filter to other than name also -->\r\n                    <!--to get ledger based on master id replace $Name with $Masterid -->\r\n                    <!--Replace Abhilashloan a/c with ledgername you want to search -->\r\n					<SYSTEM TYPE=\"Formulae\" NAME=\"Ledgerfilter\">$Name=\"Abhilashloan a/c\"</SYSTEM>\r\n				</TDLMESSAGE>\r\n			</TDL>\r\n		</DESC>\r\n	</BODY>\r\n</ENVELOPE>";
+    var data = "<ENVELOPE>\r\n	<HEADER>\r\n		<VERSION>1</VERSION>\r\n		<TALLYREQUEST>Export</TALLYREQUEST>\r\n		<TYPE>Collection</TYPE>\r\n		<ID>List of Companies</ID>\r\n	</HEADER>\r\n	<BODY>\r\n		<DESC>\r\n			<STATICVARIABLES>\r\n            <SVIsSimpleCompany>No</SVIsSimpleCompany>\r\n            </STATICVARIABLES>\r\n			<TDL>\r\n				<TDLMESSAGE>\r\n					<COLLECTION ISMODIFY=\"No\" ISFIXED=\"No\" ISINITIALIZE=\"Yes\" ISOPTION=\"No\" ISINTERNAL=\"No\" NAME=\"List of Companies\">\r\n						<TYPE>Company</TYPE>\r\n						<NATIVEMETHOD>Name</NATIVEMETHOD>\r\n					</COLLECTION>\r\n				</TDLMESSAGE>\r\n			</TDL>\r\n		</DESC>\r\n	</BODY>\r\n</ENVELOPE>";
 
-var requestOptions = {
-  method: 'POST',
-  body: raw,
-  redirect: 'follow'
-};
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
 
-fetch("http://localhost:9000", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));}
+xhr.addEventListener("readystatechange", function() {
+  if(this.readyState === 4) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("POST", "http://localhost:9000");
+
+xhr.send(data);}
 </script>
 
 </html>
